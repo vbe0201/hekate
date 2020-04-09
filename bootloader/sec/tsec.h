@@ -32,8 +32,8 @@ typedef struct _tsec_ctxt_t
 	u32 exception_info;
 } tsec_ctxt_t;
 
-int tsec_load_firmware(const void *firmware, size_t size);
-int tsec_boot_firmware(u32 bootvector, u32 *mailbox0, u32 *mailbox1);
+int tsec_load_firmware(void *firmware, u32 size);
+int tsec_boot_firmware(u32 bootvector);
 int tsec_query(u8 *tsec_keys, u8 kb, tsec_ctxt_t *tsec_ctxt);
 
 #endif

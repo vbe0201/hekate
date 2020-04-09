@@ -49,5 +49,6 @@
 #define  TSEC_DMATRFCMD_IMEM      (1 << 4)
 #define  TSEC_DMATRFCMD_SIZE_256B (6 << 8)
 #define TSEC_DMATRFFBOFFS 0x111C
+#define TSEC_SCP_CMD_ERR  0x1498
 
 #endif
