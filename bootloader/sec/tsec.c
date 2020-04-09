@@ -60,9 +60,10 @@ static int _tsec_dma_pa_to_internal_100(int not_imem, int i_offset, int pa_offse
 	return _tsec_dma_wait_idle();
 }
 
-int tsec_load_firmware(void *firmware, size_t size)
+int tsec_load_firmware(void *firmware, size_t firmware_size)
 {
 	int res = 0;
+	u8 *fwbuf = (u8 *)malloc(0x4000);
 
 	// Enable clocks.
 	clock_enable_host1x();
@@ -99,11 +100,13 @@ int tsec_load_firmware(void *firmware, size_t size)
 		goto err;
 	}
 
-	// Load in the firmware.
-	TSEC(TSEC_DMATRFBASE) = (u32)firmware >> 8;
+	// Align and load in the firmware.
+	u8 *fwbuf_aligned = (u8 *)ALIGN((u32)fwbuf, 0x100);
+	memcpy(fwbuf_aligned, firmware, firmware_size);
+	TSEC(TSEC_DMATRFBASE) = (u32)fwbuf_aligned >> 8;
 
 	// Configure DMA to transfer the physical buffer to Falcon.
-	for (u32 addr = 0; addr < size; addr += 0x100)
+	for (u32 addr = 0; addr < firmware_size; addr += 0x100)
 	{
 		if (!_tsec_dma_pa_to_internal_100(false, addr, addr))
 		{
@@ -125,6 +128,7 @@ err:;
 
 out:;
 
+	free(fwbuf);
 	return res;
 }
 
