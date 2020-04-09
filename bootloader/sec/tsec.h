@@ -27,9 +27,12 @@ typedef struct _tsec_ctxt_t
 	void *pkg1;
 	u32 pkg11_off;
 	u32 secmon_base;
+	u32 status;
+	u32 cmd_err;
+	u32 exception_info;
 } tsec_ctxt_t;
 
-int tsec_load_firmware(void *firmware, size_t size);
+int tsec_load_firmware(const void *firmware, size_t size);
 int tsec_boot_firmware(u32 bootvector, u32 *mailbox0, u32 *mailbox1);
 int tsec_query(u8 *tsec_keys, u8 kb, tsec_ctxt_t *tsec_ctxt);
 
