@@ -19,6 +19,8 @@
 
 #define TSEC_BOOTKEYVER    0x1040
 #define TSEC_STATUS        0x1044
+#define TSEC_MAILBOX0      TSEC_BOOTKEYVER
+#define TSEC_MAILBOX1      TSEC_STATUS
 #define TSEC_ITFEN         0x1048
 #define  TSEC_ITFEN_CTXEN         (1 << 0)
 #define  TSEC_ITFEN_MTHDEN        (1 << 1)
@@ -35,6 +37,7 @@
 #define  TSEC_IRQDEST_SWGEN0      (1 << 6)
 #define  TSEC_IRQDEST_SWGEN1      (1 << 7)
 #define  TSEC_IRQDEST_EXT(val)    (((val) & 0xFF) << 8)
+#define TSEC_EXCI         0x10D0
 #define TSEC_CPUCTL       0x1100
 #define  TSEC_CPUCTL_STARTCPU     (1 << 1)
 #define TSEC_BOOTVEC      0x1104
