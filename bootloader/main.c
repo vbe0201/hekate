@@ -1274,6 +1274,7 @@ ment_t ment_tools[] = {
 	MDEF_CHGLINE(),
 	MDEF_CAPTION("-------- Misc --------", 0xFF0AB9E6),
 	MDEF_HANDLER("Dump package1/2", dump_packages12),
+	MDEF_HANDLER("Boot TSEC payload", boot_tsec_payload),
 	//MDEF_HANDLER("Fix archive bit (except Nintendo)", fix_sd_all_attr),
 	//MDEF_HANDLER("Fix archive bit (Nintendo only)", fix_sd_nin_attr),
 	//MDEF_HANDLER("Fix fuel gauge configuration", fix_fuel_gauge_configuration),

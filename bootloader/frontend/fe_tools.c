@@ -48,6 +48,83 @@ extern void emmcsn_path_impl(char *path, char *sub_dir, char *filename, sdmmc_st
 #pragma GCC push_options
 #pragma GCC optimize ("Os")
 
+static void _tsec_boot_firmware(const void *firmware, u32 firmware_size)
+{
+	int res = 0;
+	tsec_ctxt_t tsec_ctx;
+	u8 tsec_keys[0x20];
+
+	// Prepare key buffer and TSEC context.
+	tsec_ctx.fw = firmware;
+	tsec_ctx.size = firmware_size;
+
+	memset(tsec_keys, 0, 0x20);
+
+	// Prepare display for output.
+	gfx_clear_partial_grey(0x1B, 0, 1256);
+	gfx_con_setpos(0, 0);
+
+	// Kick off TSEC execution.
+	res = tsec_query(tsec_keys, 0, &tsec_ctx);
+
+	gfx_printf("\nExecution Status: %08X\n", tsec_ctx.status);
+
+	if (!res)
+	{
+		// Print out the TSEC key.
+		gfx_printf("%kTSEC key:  %k", 0xFF00DDFF, 0xFFCCCCCC);
+		for (u32 i = 0; i < 0x10; i++)
+		{
+			gfx_printf("%02X", tsec_keys[i]);
+		}
+
+		// Dump the TSEC key to output file.
+		if (sd_mount())
+		{
+			char path[64];
+			emmcsn_path_impl(path, "/dumps", "key.bin", NULL);
+			if (!sd_save_to_file(tsec_keys, 0x10, path))
+			{
+				gfx_puts("\nDone!\n");
+			}
+
+			sd_unmount();
+		}
+	}
+	else
+	{
+		// Print error details.
+		EPRINTFARGS("ERROR DURING EXECUTION: %X\n", res);
+
+		gfx_printf("\nPC:               %X\n", tsec_ctx.exception_info & 0x80000);
+		gfx_printf("Exception Clause: ");
+		switch ((tsec_ctx.exception_info >> 20) & 0xF)
+		{
+			case 0: WPRINTF("Trap 0");
+			case 1: WPRINTF("Trap 1");
+			case 2: WPRINTF("Trap 2");
+			case 3: WPRINTF("Trap 3");
+			case 4: WPRINTF("Invalid Opcode");
+			case 5: WPRINTF("Authentication Entry");
+			case 6: WPRINTF("Page Miss");
+			case 7: WPRINTF("Multiple Page Miss");
+			case 8: WPRINTF("Breakpoint Hit");
+			default: gfx_printf("Unknown\n");
+		}
+	}
+
+	gfx_puts("\n\nPress any key...\n");
+
+	btn_wait();
+}
+
+void boot_tsec_payload()
+{
+	#include "../../../faucon/payload/tsec_fw.h"
+
+	_tsec_boot_firmware(tsec_fw_bin, tsec_fw_bin_size);
+}
+
 void dump_packages12()
 {
 	if (!sd_mount())
