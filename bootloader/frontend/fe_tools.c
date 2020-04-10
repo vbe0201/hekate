@@ -77,39 +77,26 @@ static void _tsec_boot_firmware(const void *firmware, u32 firmware_size)
 		{
 			gfx_printf("%02X", tsec_keys[i]);
 		}
-
-		// Dump the TSEC key to output file.
-		if (sd_mount())
-		{
-			char path[64];
-			emmcsn_path_impl(path, "/dumps", "key.bin", NULL);
-			if (!sd_save_to_file(tsec_keys, 0x10, path))
-			{
-				gfx_puts("\nDone!\n");
-			}
-
-			sd_unmount();
-		}
 	}
 	else
 	{
 		// Print error details.
-		EPRINTFARGS("ERROR DURING EXECUTION: %X\n", res);
+		EPRINTFARGS("\nERROR DURING EXECUTION: %X\n", res);
 
 		gfx_printf("\nPC:               %X\n", tsec_ctx.exception_info & 0x80000);
 		gfx_printf("Exception Clause: ");
 		switch ((tsec_ctx.exception_info >> 20) & 0xF)
 		{
-			case 0: WPRINTF("Trap 0");
-			case 1: WPRINTF("Trap 1");
-			case 2: WPRINTF("Trap 2");
-			case 3: WPRINTF("Trap 3");
-			case 4: WPRINTF("Invalid Opcode");
-			case 5: WPRINTF("Authentication Entry");
-			case 6: WPRINTF("Page Miss");
-			case 7: WPRINTF("Multiple Page Miss");
-			case 8: WPRINTF("Breakpoint Hit");
-			default: gfx_printf("Unknown\n");
+			case 0: WPRINTF("Trap 0"); break;
+			case 1: WPRINTF("Trap 1"); break;
+			case 2: WPRINTF("Trap 2"); break;
+			case 3: WPRINTF("Trap 3"); break;
+			case 4: WPRINTF("Invalid Opcode"); break;
+			case 5: WPRINTF("Authentication Entry"); break;
+			case 6: WPRINTF("Page Miss"); break;
+			case 7: WPRINTF("Multiple Page Miss"); break;
+			case 8: WPRINTF("Breakpoint Hit"); break;
+			default: gfx_printf("Unknown\n"); break;
 		}
 	}
 
